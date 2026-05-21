@@ -29,9 +29,9 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
             Hello, <span class="hero-name">{{ data.customerName }}</span>
             <span class="wave">👋</span>
           </h1>
-          <p class="hero-sub">Your health insurance portfolio is looking great. Stay protected!</p>
+          <p class="hero-sub">{{ data.activeEnrollments > 0 ? 'Your health insurance portfolio is looking great. Stay protected!' : 'You have no active policies yet. Browse plans to get covered!' }}</p>
           <div class="hero-chips">
-            <span class="chip green">
+            <span [class]="data.activeEnrollments > 0 ? 'chip green' : 'chip red'">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
               {{ data.activeEnrollments }} Active Plans
             </span>
@@ -66,6 +66,18 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 
       <!-- ── Stat Cards ── -->
       <div class="stats-grid">
+        <div class="stat-card" style="--g1:#059669;--g2:#34d399;--shadow:rgba(5,150,105,0.25)">
+          <div class="stat-bg-icon">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.2" opacity="0.15"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="stat-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span class="stat-num">{{ data.activeEnrollments }}</span>
+          <span class="stat-label">Active Enrollments</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:65%"></div></div>
+        </div>
+
         <div class="stat-card" style="--g1:#4f46e5;--g2:#818cf8;--shadow:rgba(79,70,229,0.25)">
           <div class="stat-bg-icon">
             <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.2" opacity="0.15"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -76,18 +88,6 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
           <span class="stat-num">{{ data.totalEnrollments }}</span>
           <span class="stat-label">Total Enrollments</span>
           <div class="stat-bar"><div class="stat-fill" style="width:80%"></div></div>
-        </div>
-
-        <div class="stat-card" style="--g1:#059669;--g2:#34d399;--shadow:rgba(5,150,105,0.25)">
-          <div class="stat-bg-icon">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.2" opacity="0.15"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <div class="stat-icon-wrap">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <span class="stat-num">{{ data.activeEnrollments }}</span>
-          <span class="stat-label">Active Policies</span>
-          <div class="stat-bar"><div class="stat-fill" style="width:65%"></div></div>
         </div>
 
         <div class="stat-card" style="--g1:#d97706;--g2:#fbbf24;--shadow:rgba(217,119,6,0.25)">
@@ -302,6 +302,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
     .hcf-value { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: white; }
     .hcf-dot { width: 10px; height: 10px; border-radius: 50%; background: #4ade80; margin-left: auto; box-shadow: 0 0 8px #4ade80; animation: pulse 2s infinite; }
     .hcf-dot.not-protected { background: #f87171; box-shadow: 0 0 8px #f87171; }
+    .chip.red { background: rgba(254,202,202,0.25); color: #fca5a5; border: 1px solid rgba(248,113,113,0.3); }
     @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
     /* ── Stats ── */

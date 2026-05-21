@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -102,9 +103,7 @@ import { RouterLink } from '@angular/router';
       </div>
       <div class="features-grid">
         <div class="feature-card" *ngFor="let feature of features">
-          <div class="feature-icon-wrap" [style.background]="feature.bg">
-            <svg [attr.width]="28" [attr.height]="28" viewBox="0 0 24 24" fill="none" [attr.stroke]="feature.color" stroke-width="2" [innerHTML]="feature.svg"></svg>
-          </div>
+          <div class="feature-icon-wrap" [style.background]="feature.bg" [innerHTML]="getFeatureSvg(feature)"></div>
           <h3>{{ feature.title }}</h3>
           <p>{{ feature.desc }}</p>
         </div>
@@ -123,9 +122,7 @@ import { RouterLink } from '@angular/router';
             <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             Most Popular
           </div>
-          <div class="plan-icon-wrap" [style.background]="plan.bg">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" [attr.stroke]="plan.color" stroke-width="2" [innerHTML]="plan.svg"></svg>
-          </div>
+          <div class="plan-icon-wrap" [style.background]="plan.bg" [innerHTML]="getPlanSvg(plan)"></div>
           <h3>{{ plan.name }}</h3>
           <div class="plan-price">
             <span class="currency">₹</span>
@@ -150,9 +147,7 @@ import { RouterLink } from '@angular/router';
         <p>We make health insurance simple, transparent, and accessible for everyone.</p>
         <div class="why-points">
           <div class="why-point" *ngFor="let point of whyUs">
-            <div class="why-icon-wrap" [style.background]="point.bg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" [attr.stroke]="point.color" stroke-width="2" [innerHTML]="point.svg"></svg>
-            </div>
+            <div class="why-icon-wrap" [style.background]="point.bg" [innerHTML]="getWhySvg(point)"></div>
             <div>
               <h4>{{ point.title }}</h4>
               <p>{{ point.desc }}</p>
@@ -367,6 +362,26 @@ import { RouterLink } from '@angular/router';
   `]
 })
 export class HomeComponent {
+  constructor(private sanitizer: DomSanitizer) {}
+
+  getFeatureSvg(item: any): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(
+      `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${item.color}" stroke-width="2" style="display:block">${item.svg}</svg>`
+    );
+  }
+
+  getPlanSvg(item: any): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(
+      `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${item.color}" stroke-width="2" style="display:block">${item.svg}</svg>`
+    );
+  }
+
+  getWhySvg(item: any): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(
+      `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${item.color}" stroke-width="2" style="display:block">${item.svg}</svg>`
+    );
+  }
+
   features = [
     {
       svg: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
