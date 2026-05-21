@@ -48,9 +48,9 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
             </div>
             <div>
               <span class="hcf-label">Coverage Status</span>
-              <span class="hcf-value">Protected</span>
+              <span class="hcf-value">{{ data.activeEnrollments > 0 ? 'Protected' : 'Not Protected' }}</span>
             </div>
-            <div class="hcf-dot"></div>
+            <div class="hcf-dot" [class.not-protected]="data.activeEnrollments === 0"></div>
           </div>
           <div class="hero-card-float fc2">
             <div class="hcf-icon orange">
@@ -301,6 +301,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
     .hcf-label { display: block; font-family: 'Inter', sans-serif; font-size: 0.72rem; color: #a5b4fc; }
     .hcf-value { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: white; }
     .hcf-dot { width: 10px; height: 10px; border-radius: 50%; background: #4ade80; margin-left: auto; box-shadow: 0 0 8px #4ade80; animation: pulse 2s infinite; }
+    .hcf-dot.not-protected { background: #f87171; box-shadow: 0 0 8px #f87171; }
     @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
     /* ── Stats ── */
