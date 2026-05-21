@@ -9,41 +9,22 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
+    <a routerLink="/" class="top-brand">
+      <img src="logo.jpg" alt="InsureHealth" class="brand-logo" />
+      <span class="brand-name">InsureHealth</span>
+    </a>
     <div class="auth-container">
-<<<<<<< HEAD
       <div class="auth-card">
         <h2>Login</h2>
-=======
-
-      <!-- Top Nav Bar -->
-      <div class="top-nav">
-        <a routerLink="/" class="brand">
-          <img src="logo.jpg" alt="InsureHealth" class="nav-logo">
-          <span class="brand-text">InsureHealth</span>
-        </a>
-      </div>
-
-      <div class="auth-card">
-        <h2>Welcome Back</h2>
-        <p class="subtitle">Sign in to your account</p>
->>>>>>> New_UI
         <div class="error" *ngIf="error">{{ error }}</div>
         <form (ngSubmit)="onSubmit()">
           <div class="form-group">
             <label>Email</label>
-<<<<<<< HEAD
             <input type="email" [(ngModel)]="email" name="email" required />
           </div>
           <div class="form-group">
             <label>Password</label>
             <input type="password" [(ngModel)]="password" name="password" required />
-=======
-            <input type="email" [(ngModel)]="email" name="email" required placeholder="you@example.com"/>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" [(ngModel)]="password" name="password" required placeholder="••••••••"/>
->>>>>>> New_UI
           </div>
           <button type="submit" [disabled]="loading">{{ loading ? 'Logging in...' : 'Login' }}</button>
         </form>
@@ -52,7 +33,9 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
   styles: [`
-<<<<<<< HEAD
+    .top-brand { position: fixed; top: 1rem; left: 1.5rem; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; z-index: 100; }
+    .brand-logo { height: 38px; width: 38px; object-fit: contain; border-radius: 8px; }
+    .brand-name { font-size: 1.25rem; font-weight: 700; color: #4f46e5; font-family: 'Poppins', sans-serif; }
     .auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f7fa; }
     .auth-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
     h2 { text-align: center; margin-bottom: 1.5rem; color: #333; }
@@ -65,68 +48,6 @@ import { AuthService } from '../../services/auth.service';
     .error { background: #fee; color: #c00; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem; text-align: center; }
     .link { text-align: center; margin-top: 1rem; }
     .link a { color: #4f46e5; }
-=======
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap');
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    .auth-container {
-      display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; background: #f8fafc; font-family: 'Inter', sans-serif;
-    }
-
-    /* ── Top Nav ── */
-    .top-nav {
-      width: 100%; padding: 1rem 2rem;
-      background: white; border-bottom: 1px solid #e2e8f0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    .brand {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      text-decoration: none; cursor: pointer;
-    }
-    .nav-logo { height: 34px; width: 34px; object-fit: contain; border-radius: 8px; }
-    .brand-text {
-      font-family: 'Poppins', sans-serif; font-size: 1.2rem;
-      font-weight: 700; color: #0f172a; letter-spacing: -0.3px;
-    }
-    .brand:hover .brand-text { color: #4f46e5; }
-
-    /* ── Card ── */
-    .auth-card {
-      background: white; padding: 2.5rem 2rem; border-radius: 20px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08); width: 100%; max-width: 420px;
-      margin-top: 4rem; border: 1px solid #f1f5f9;
-    }
-    h2 { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 0.25rem; }
-    .subtitle { text-align: center; color: #94a3b8; font-size: 0.88rem; margin-bottom: 1.75rem; }
-
-    .form-group { margin-bottom: 1.1rem; }
-    .form-group label { display: block; margin-bottom: 0.35rem; font-weight: 600; font-size: 0.85rem; color: #334155; }
-    .form-group input {
-      width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e2e8f0;
-      border-radius: 10px; font-size: 0.95rem; font-family: 'Inter', sans-serif;
-      outline: none; transition: border-color 0.2s; color: #0f172a;
-    }
-    .form-group input:focus { border-color: #4f46e5; }
-
-    button {
-      width: 100%; padding: 0.8rem;
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
-      color: white; border: none; border-radius: 10px;
-      font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
-      font-weight: 700; cursor: pointer; margin-top: 0.5rem;
-      box-shadow: 0 4px 14px rgba(79,70,229,0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79,70,229,0.4); }
-    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    .error { background: #fee2e2; color: #dc2626; padding: 0.6rem 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; font-size: 0.85rem; border: 1px solid #fecaca; }
-    .link { text-align: center; margin-top: 1.25rem; font-size: 0.88rem; color: #64748b; }
-    .link a { color: #4f46e5; font-weight: 600; text-decoration: none; }
-    .link a:hover { text-decoration: underline; }
->>>>>>> New_UI
   `]
 })
 export class LoginComponent {
@@ -163,9 +84,5 @@ export class LoginComponent {
       }
     });
   }
-<<<<<<< HEAD
 }
 
-=======
-}
->>>>>>> New_UI

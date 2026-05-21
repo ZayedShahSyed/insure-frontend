@@ -22,13 +22,13 @@ export class PolicyService {
     return this.http.get<PolicyResponse[]>(this.apiUrl);
   }
 
-<<<<<<< HEAD
-=======
+
+
   getActive(): Observable<PolicyResponse[]> {
     return this.http.get<PolicyResponse[]>(`${this.apiUrl}/active`);
   }
 
->>>>>>> New_UI
+
   getMyPolicies(): Observable<PolicyResponse[]> {
     return this.http.get<PolicyResponse[]>(`${this.apiUrl}/my`);
   }
@@ -44,9 +44,4 @@ export class PolicyService {
   reactivate(id: number): Observable<PolicyResponse> {
     return this.http.patch<PolicyResponse>(`${this.apiUrl}/${id}/reactivate`, {});
   }
-<<<<<<< HEAD
 }
-
-=======
-}
->>>>>>> New_UI

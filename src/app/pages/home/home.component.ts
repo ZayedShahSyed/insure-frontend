@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   template: `
     <!-- Navbar -->
     <nav class="navbar">
-      <div class="nav-brand"><img src="logo.jpg" alt="InsureHealth" class="nav-logo"> InsureHealth</div>
+      <a class="nav-brand" href="/">  <img src="logo.jpg" alt="InsureHealth" class="nav-logo"> InsureHealth</a>
       <div class="nav-links">
         <a href="#features">Features</a>
         <a href="#plans">Plans</a>
@@ -235,7 +235,7 @@ import { RouterLink } from '@angular/router';
 
     /* Navbar */
     .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; font-family: 'DM Sans', sans-serif; }
-    .nav-brand { font-size: 1.4rem; font-weight: 700; color: #4f46e5; display: flex; align-items: center; gap: 0.5rem; font-family: 'Poppins', sans-serif; }
+    .nav-brand { font-size: 1.4rem; font-weight: 700; color: #4f46e5; display: flex; align-items: center; gap: 0.5rem; font-family: 'Poppins', sans-serif; text-decoration: none; cursor: pointer; }
     .nav-logo { height: 40px; width: 40px; object-fit: contain; border-radius: 8px; }
     .nav-links { display: flex; align-items: center; gap: 1.5rem; }
     .nav-links a { text-decoration: none; color: #555; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; font-family: 'DM Sans', sans-serif; }

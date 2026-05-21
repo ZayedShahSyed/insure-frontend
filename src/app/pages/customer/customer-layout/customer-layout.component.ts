@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-// filepath: c:\Users\2494394\Downloads\Interim Project Frontend\insure-frontend-master\src\app\pages\customer\customer-layout\customer-layout.component.ts
->>>>>>> New_UI
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -14,31 +10,11 @@ import { AuthService } from '../../../services/auth.service';
   template: `
     <div class="layout">
       <nav class="sidebar">
-<<<<<<< HEAD
-        <div class="brand">🏥 InsureHealth</div>
-        <ul>
-          <li><a routerLink="dashboard" routerLinkActive="active">📊 Dashboard</a></li>
-          <li><a routerLink="policies" routerLinkActive="active">🔍 Browse Policies</a></li>
-          <li><a routerLink="enrollments" routerLinkActive="active">📝 My Enrollments</a></li>
-          <li><a routerLink="claims" routerLinkActive="active">📄 My Claims</a></li>
-        </ul>
-        <div class="user-info">
-          <span class="user-name">{{ userName }}</span>
-          <span class="user-role">Customer</span>
-        </div>
-        <button class="logout" (click)="logout()">🚪 Logout</button>
-      </nav>
-      <div class="main-area">
-        <header class="topbar">
-          <h2 class="page-title">Health Insurance Portal</h2>
-          <div class="topbar-right">
-            <span class="welcome">Welcome, {{ userName }}</span>
-=======
+
         <div class="brand" routerLink="dashboard" style="cursor:pointer">
           <img src="logo.jpg" alt="InsureHealth" class="nav-logo">
           <span class="brand-text">InsureHealth</span>
         </div>
-
 
         <span class="menu-label">NAVIGATION</span>
         <ul>
@@ -69,6 +45,10 @@ import { AuthService } from '../../../services/auth.service';
         </ul>
 
         <div class="sidebar-bottom">
+          <a routerLink="/" class="home-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Go to Homepage
+          </a>
           <div class="user-card">
             <div class="user-avatar">{{ userInitial }}</div>
             <div class="user-details">
@@ -81,6 +61,7 @@ import { AuthService } from '../../../services/auth.service';
             Sign Out
           </button>
         </div>
+
       </nav>
 
       <div class="main-area">
@@ -94,34 +75,16 @@ import { AuthService } from '../../../services/auth.service';
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Welcome, <strong>{{ userName }}</strong>
             </div>
->>>>>>> New_UI
           </div>
         </header>
         <main class="content">
           <router-outlet></router-outlet>
         </main>
       </div>
+
     </div>
   `,
   styles: [`
-<<<<<<< HEAD
-    .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 240px; background: #1e293b; color: white; padding: 1.25rem; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; }
-    .brand { font-size: 1.3rem; font-weight: bold; margin-bottom: 2rem; padding: 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
-    .sidebar ul { list-style: none; padding: 0; margin: 0; flex: 1; }
-    .sidebar li a { display: block; padding: 0.75rem 1rem; color: #cbd5e1; text-decoration: none; border-radius: 6px; margin-bottom: 0.25rem; transition: all 0.2s; font-size: 0.95rem; }
-    .sidebar li a:hover { background: #334155; color: white; transform: translateX(4px); }
-    .sidebar li a.active { background: #4f46e5; color: white; }
-    .user-info { padding: 0.75rem; background: #334155; border-radius: 6px; margin-bottom: 0.75rem; }
-    .user-name { display: block; font-weight: 600; font-size: 0.9rem; }
-    .user-role { font-size: 0.75rem; color: #94a3b8; }
-    .logout { padding: 0.7rem; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
-    .logout:hover { background: #b91c1c; }
-    .main-area { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
-    .topbar { background: white; padding: 1rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
-    .page-title { font-size: 1.1rem; color: #333; margin: 0; }
-    .topbar-right .welcome { font-size: 0.9rem; color: #666; }
-=======
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,6 +142,17 @@ import { AuthService } from '../../../services/auth.service';
     }
     .logout-btn:hover { background: #7f1d1d; color: white; }
 
+    /* Home Button */
+    .home-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.65rem; background: transparent;
+      color: #94a3b8; border: 1px solid #1e293b;
+      border-radius: 10px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .home-btn:hover { background: #1e293b; color: #e2e8f0; }
+
     /* ── Main Area ── */
     .main-area { margin-left: 248px; flex: 1; display: flex; flex-direction: column; }
 
@@ -203,29 +177,18 @@ import { AuthService } from '../../../services/auth.service';
     .welcome-chip strong { font-family: 'DM Sans', sans-serif; font-weight: 700; }
 
     /* Content */
->>>>>>> New_UI
     .content { flex: 1; padding: 2rem; background: #f8fafc; overflow-y: auto; }
   `]
 })
 export class CustomerLayoutComponent {
   userName = '';
-<<<<<<< HEAD
-=======
   userInitial = '';
->>>>>>> New_UI
 
   constructor(private authService: AuthService) {
     const user = this.authService.getCurrentUser();
     this.userName = user?.fullName || 'Customer';
-<<<<<<< HEAD
-  }
-
-  logout() { this.authService.logout(); }
-}
-=======
     this.userInitial = this.userName.charAt(0).toUpperCase();
   }
 
   logout() { this.authService.logout(); }
 }
->>>>>>> New_UI

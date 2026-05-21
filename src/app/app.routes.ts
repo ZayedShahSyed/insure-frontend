@@ -2,14 +2,16 @@ import { Routes } from '@angular/router';
 import { authGuard, adminGuard, customerGuard, noAuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-<<<<<<< HEAD
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-=======
-   {
+
+  {
     path: '',
     loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
   },
->>>>>>> New_UI
+  {
+    path: 'home',
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
+  },
+
   {
     path: 'login',
     canActivate: [noAuthGuard],
