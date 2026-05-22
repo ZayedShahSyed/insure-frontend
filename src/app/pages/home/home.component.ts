@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { AuthService } from '../../services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -15,8 +17,16 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <a href="#features">Features</a>
         <a href="#plans">Plans</a>
         <a href="#why-us">Why Us</a>
-        <a routerLink="/login" class="btn-outline">Login</a>
-        <a routerLink="/register" class="btn-primary">Get Started</a>
+        <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="btn-outline">Login</a>
+          <a routerLink="/register" class="btn-primary">Get Started</a>
+        </ng-container>
+        <ng-container *ngIf="isLoggedIn && userRole === 'ADMIN'">
+          <a routerLink="/admin/dashboard" class="btn-primary">Admin Dashboard</a>
+        </ng-container>
+        <ng-container *ngIf="isLoggedIn && userRole === 'CUSTOMER'">
+          <a routerLink="/customer/dashboard" class="btn-primary">Customer Dashboard</a>
+        </ng-container>
       </div>
     </nav>
 
@@ -33,11 +43,25 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           Protect yourself and your family with the best coverage at affordable prices.
         </p>
         <div class="hero-actions">
-          <a routerLink="/register" class="btn-hero-primary">
-            Get Free Quote
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a routerLink="/login" class="btn-hero-secondary">Existing Member? Login</a>
+          <ng-container *ngIf="!isLoggedIn">
+            <a routerLink="/register" class="btn-hero-primary">
+              Get Free Quote
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a routerLink="/login" class="btn-hero-secondary">Existing Member? Login</a>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn && userRole === 'ADMIN'">
+            <a routerLink="/admin/dashboard" class="btn-hero-primary">
+              Go to Admin Dashboard
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn && userRole === 'CUSTOMER'">
+            <a routerLink="/customer/dashboard" class="btn-hero-primary">
+              Go to Customer Dashboard
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </ng-container>
         </div>
         <div class="hero-stats">
           <div class="stat">
@@ -182,8 +206,16 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <h2>Ready to Get Protected?</h2>
         <p>Join thousands of families who trust InsureHealth for their healthcare needs.</p>
         <div class="cta-actions">
-          <a routerLink="/register" class="btn-cta-primary">Create Free Account</a>
-          <a routerLink="/login" class="btn-cta-secondary">Login to Portal</a>
+          <ng-container *ngIf="!isLoggedIn">
+            <a routerLink="/register" class="btn-cta-primary">Create Free Account</a>
+            <a routerLink="/login" class="btn-cta-secondary">Login to Portal</a>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn && userRole === 'ADMIN'">
+            <a routerLink="/admin/dashboard" class="btn-cta-primary">Go to Admin Dashboard</a>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn && userRole === 'CUSTOMER'">
+            <a routerLink="/customer/dashboard" class="btn-cta-primary">Go to Customer Dashboard</a>
+          </ng-container>
         </div>
       </div>
     </section>
@@ -197,8 +229,16 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         </div>
         <div class="footer-links">
           <h4>Quick Links</h4>
-          <a routerLink="/login">Login</a>
-          <a routerLink="/register">Register</a>
+          <ng-container *ngIf="!isLoggedIn">
+            <a routerLink="/login">Login</a>
+            <a routerLink="/register">Register</a>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn && userRole === 'ADMIN'">
+            <a routerLink="/admin/dashboard">Dashboard</a>
+          </ng-container>
+          <ng-container *ngIf="isLoggedIn && userRole === 'CUSTOMER'">
+            <a routerLink="/customer/dashboard">Dashboard</a>
+          </ng-container>
           <a href="#features">Features</a>
           <a href="#plans">Plans</a>
         </div>
@@ -361,8 +401,18 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     .footer-bottom { border-top: 1px solid #334155; padding-top: 1.5rem; text-align: center; font-size: 0.85rem; color: #64748b; }
   `]
 })
-export class HomeComponent {
-  constructor(private sanitizer: DomSanitizer) {}
+export class HomeComponent implements OnInit {
+  isLoggedIn = false;
+  userRole: string | null = null;
+
+  constructor(private sanitizer: DomSanitizer, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.userRole = user ? user.role : null;
+    });
+  }
 
   getFeatureSvg(item: any): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(
