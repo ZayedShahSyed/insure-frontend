@@ -226,16 +226,17 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
             </div>
             <svg class="ac-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a routerLink="/admin/categories" class="action-card ac-emerald">
+          <a routerLink="/admin/customers" class="action-card ac-teal">
             <div class="ac-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <div class="ac-text">
-              <span class="ac-title">Manage Categories</span>
-              <span class="ac-sub">Organise policy categories</span>
+              <span class="ac-title">View Customers</span>
+              <span class="ac-sub">{{ data.totalCustomers }} registered customers</span>
             </div>
             <svg class="ac-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
+
         </div>
       </div>
 
@@ -309,11 +310,13 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
     .ac-violet { background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-color: #ddd6fe; }
     .ac-amber  { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: #fde68a; }
     .ac-emerald{ background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-color: #a7f3d0; }
+    .ac-teal   { background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border-color: #99f6e4; }
     .ac-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .ac-sky    .ac-icon { background: linear-gradient(135deg, #0284c7, #38bdf8); box-shadow: 0 4px 12px rgba(2,132,199,0.35); }
     .ac-violet .ac-icon { background: linear-gradient(135deg, #7c3aed, #a78bfa); box-shadow: 0 4px 12px rgba(124,58,237,0.35); }
     .ac-amber  .ac-icon { background: linear-gradient(135deg, #d97706, #fbbf24); box-shadow: 0 4px 12px rgba(217,119,6,0.35); }
     .ac-emerald .ac-icon { background: linear-gradient(135deg, #059669, #34d399); box-shadow: 0 4px 12px rgba(5,150,105,0.35); }
+    .ac-teal   .ac-icon { background: linear-gradient(135deg, #0d9488, #2dd4bf); box-shadow: 0 4px 12px rgba(13,148,136,0.35); }
     .ac-text { flex: 1; }
     .ac-title { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; color: #1e293b; }
     .ac-sub { font-family: 'Inter', sans-serif; font-size: 0.78rem; color: #94a3b8; }

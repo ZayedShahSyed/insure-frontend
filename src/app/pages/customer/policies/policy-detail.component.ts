@@ -119,7 +119,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
               </div>
               <div class="plan-stat">
                 <span class="stat-label">Tenure Options</span>
-                <span class="stat-value">{{ plan.tenureOptions?.join(', ') }} yr(s)</span>
+                <span class="stat-value">{{ plan.tenureOptions.join(', ') }} yr(s)</span>
               </div>
             </div>
 

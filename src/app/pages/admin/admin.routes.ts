@@ -11,6 +11,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'policies/:id/plans', loadComponent: () => import('./plans/plans.component').then(m => m.PlansComponent) },
       { path: 'enrollments', loadComponent: () => import('./enrollments/admin-enrollments.component').then(m => m.AdminEnrollmentsComponent) },
       { path: 'claims', loadComponent: () => import('./claims/admin-claims.component').then(m => m.AdminClaimsComponent) },
+      { path: 'customers', loadComponent: () => import('./customers/admin-customers.component').then(m => m.AdminCustomersComponent) },
     ]
   }
 ];

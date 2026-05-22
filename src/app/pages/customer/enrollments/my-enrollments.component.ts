@@ -38,7 +38,7 @@ import { ToastService } from '../../../shared/services/toast.service';
             <div class="detail"><span class="label">Premium</span><span class="value">₹{{ e.premiumAmount | number }}</span></div>
             <div class="detail"><span class="label">Start</span><span class="value">{{ e.startDate || 'Pending' }}</span></div>
             <div class="detail"><span class="label">End</span><span class="value">{{ e.endDate || 'Pending' }}</span></div>
-            <div class="detail"><span class="label">Members</span><span class="value">{{ e.members?.length || 0 }}</span></div>
+            <div class="detail"><span class="label">Members</span><span class="value">{{ e.members.length }}</span></div>
           </div>
 
           <button class="btn-details" (click)="toggleDetails(e.id)">

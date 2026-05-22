@@ -86,6 +86,23 @@ export interface AuthResponse {
   fullName: string;
 }
 
+export interface CustomerUserResponse {
+  userId: number;
+  fullName: string;
+  email: string;
+  phone?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  occupation?: string;
+  isActive?: boolean;
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
 export interface CurrentUser {
   userId: number;
   email: string;
@@ -198,14 +215,15 @@ export interface EnrollmentResponse {
   policyName: string;
   planName: string;
   premiumAmount: number;
+  customerId: number;
+  customerEmail: string;
+  customerPhone: string;
   tenureYears: number;
   startDate: string;
   endDate: string;
   paymentStatus: string;
   status: string;
   customerName: string;
-  customerEmail: string;
-  customerPhone: string;
   coverageAmount: number;
   policyType: string;
   approvedAt: string;

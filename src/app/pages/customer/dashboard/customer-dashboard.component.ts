@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { DashboardService } from '../../../services/dashboard.service';
-import { CustomerDashboardResponse } from '../../../models';
+import { EnrollmentService } from '../../../services/enrollment.service';
+import { CustomerDashboardResponse, EnrollmentResponse } from '../../../models';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
@@ -15,7 +17,24 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 
     <div *ngIf="!loading && data" class="dashboard">
 
-      <!-- ── Hero Banner ── -->
+      <!-- ── Policy Cancellation Notification ── -->
+      <div *ngIf="cancelledEnrollments.length > 0 && !dismissedCancellation" class="cancellation-banner">
+        <div class="cb-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="cb-body">
+          <p class="cb-title">Policy Deactivated by Organisation</p>
+          <p class="cb-sub">
+            The following {{ cancelledEnrollments.length === 1 ? 'enrollment has' : cancelledEnrollments.length + ' enrollments have' }} been cancelled because the policy or plan was deactivated:
+            <strong>{{ cancelledEnrollments.map(e => e.policyName + ' – ' + e.planName).join(', ') }}</strong>.
+            Please browse available plans to re-enroll.
+          </p>
+          <a routerLink="/customer/policies" class="cb-btn">Browse Plans</a>
+        </div>
+        <button class="cb-close" (click)="dismissedCancellation = true" title="Dismiss">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
       <div class="hero-banner">
         <div class="hero-blob b1"></div>
         <div class="hero-blob b2"></div>
@@ -182,7 +201,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
       <div class="bottom-grid">
 
         <!-- Recent Enrollments -->
-        <div class="table-card" *ngIf="data.recentEnrollments?.length">
+        <div class="table-card" *ngIf="data.recentEnrollments.length">
           <div class="table-card-header">
             <div class="tch-left">
               <div class="tch-dot indigo"></div>
@@ -212,7 +231,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
         </div>
 
         <!-- Recent Claims -->
-        <div class="table-card" *ngIf="data.recentClaims?.length">
+        <div class="table-card" *ngIf="data.recentClaims.length">
           <div class="table-card-header">
             <div class="tch-left">
               <div class="tch-dot violet"></div>
@@ -243,7 +262,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
       </div>
 
       <!-- ── Empty State ── -->
-      <div class="empty-state" *ngIf="!data.recentEnrollments?.length && !data.recentClaims?.length">
+      <div class="empty-state" *ngIf="!data.recentEnrollments.length && !data.recentClaims.length">
         <div class="empty-glow"></div>
         <div class="empty-icon-wrap">
           <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -375,18 +394,47 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
       .hero-right { display: none; }
       .hero-title { font-size: 1.5rem; }
     }
+
+    /* ── Cancellation Notification Banner ── */
+    .cancellation-banner { display: flex; align-items: flex-start; gap: 1rem; background: linear-gradient(135deg, #fff7ed, #fef3c7); border: 1.5px solid #fbbf24; border-radius: 16px; padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; position: relative; box-shadow: 0 4px 16px rgba(251,191,36,0.18); animation: slideIn 0.4s ease both; }
+    .cb-icon { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #f59e0b, #fbbf24); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 10px rgba(245,158,11,0.35); }
+    .cb-body { flex: 1; }
+    .cb-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.95rem; color: #92400e; margin-bottom: 0.3rem; }
+    .cb-sub { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: #b45309; line-height: 1.5; margin-bottom: 0.6rem; }
+    .cb-btn { display: inline-flex; align-items: center; background: #f59e0b; color: white; padding: 0.35rem 1rem; border-radius: 8px; text-decoration: none; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; transition: background 0.2s; }
+    .cb-btn:hover { background: #d97706; }
+    .cb-close { position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; cursor: pointer; color: #b45309; padding: 0.2rem; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .cb-close:hover { background: rgba(245,158,11,0.15); }
   `]
 })
 export class CustomerDashboardComponent implements OnInit {
   data: CustomerDashboardResponse | null = null;
   loading = true;
+  cancelledEnrollments: EnrollmentResponse[] = [];
+  dismissedCancellation = false;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private enrollmentService: EnrollmentService
+  ) {}
 
   ngOnInit() {
-    this.dashboardService.getCustomerDashboard().subscribe({
-      next: res => { this.data = res; this.loading = false; },
-      error: () => { this.loading = false; }
+    forkJoin({
+      dashboard: this.dashboardService.getCustomerDashboard(),
+      enrollments: this.enrollmentService.getMyEnrollments()
+    }).subscribe({
+      next: ({ dashboard, enrollments }) => {
+        this.data = dashboard;
+        this.cancelledEnrollments = enrollments.filter(e => e.status === 'CANCELLED');
+        this.loading = false;
+      },
+      error: () => {
+        // Fallback: load dashboard only
+        this.dashboardService.getCustomerDashboard().subscribe({
+          next: res => { this.data = res; this.loading = false; },
+          error: () => { this.loading = false; }
+        });
+      }
     });
   }
 }

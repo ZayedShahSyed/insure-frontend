@@ -205,7 +205,7 @@ export class PoliciesComponent implements OnInit {
     this.categoryService.getActive().subscribe(res => this.categories = res);
   }
 
-  load() { this.policyService.getMyPolicies().subscribe(res => this.policies = res); }
+  load() { this.policyService.getAll().subscribe(res => this.policies = res); }
 
   onSubmit() {
     if (this.editing) {

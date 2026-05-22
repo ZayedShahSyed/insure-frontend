@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthRequest, AuthResponse, CurrentUser, RegisterRequest } from '../models';
+import { AuthRequest, AuthResponse, CurrentUser, CustomerUserResponse, RegisterRequest } from '../models';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -27,6 +27,10 @@ export class AuthService {
 
   getMe(): Observable<CurrentUser> {
     return this.http.get<CurrentUser>(`${this.apiUrl}/me`);
+  }
+
+  getCustomers(): Observable<CustomerUserResponse[]> {
+    return this.http.get<CustomerUserResponse[]>(`${environment.apiUrl}/api/admin/users`);
   }
 
   logout(): void {
