@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: ''
+  apiUrl: 'https://insure-backend-2xzl.onrender.com'
 };
 
