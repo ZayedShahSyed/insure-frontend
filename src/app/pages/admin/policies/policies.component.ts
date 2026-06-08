@@ -58,15 +58,15 @@ import { ToastService } from "../../../shared/services/toast.service";
             </div>
             <div class="form-group">
               <label>Min Age</label>
-              <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" />
+              <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" min="1" />
+            </div>
+            <div class="form-group">
+              <label>Min Age</label>
+              <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" min="1" />
             </div>
             <div class="form-group">
               <label>Max Age</label>
-              <input [(ngModel)]="form.maxAge" name="maxAge" type="number" placeholder="65" />
-            </div>
-            <div class="form-group">
-              <label>Waiting Period (days)</label>
-              <input [(ngModel)]="form.waitingPeriodDays" name="waitingPeriodDays" type="number" placeholder="30" />
+              <input [(ngModel)]="form.maxAge" name="maxAge" type="number" placeholder="65" [min]="form.minAge || 1" />
             </div>
             <div class="form-group full-span">
               <label>Description</label>
@@ -208,6 +208,20 @@ export class PoliciesComponent implements OnInit {
   load() { this.policyService.getAll().subscribe(res => this.policies = res); }
 
   onSubmit() {
+    // Validate minAge and maxAge before submitting
+    const min = Number(this.form.minAge);
+    const max = Number(this.form.maxAge);
+
+    if (!Number.isFinite(min) || min < 1) {
+      this.toast.error("Min age must be at least 1");
+      return;
+    }
+
+    if (!Number.isFinite(max) || max <= min) {
+      this.toast.error("Max age must be greater than min age");
+      return;
+    }
+
     if (this.editing) {
       this.policyService.update(this.editId, this.form).subscribe({ next: () => { this.toast.success("Policy updated"); this.cancelEdit(); this.load(); }, error: () => this.toast.error("Failed to update") });
     } else {

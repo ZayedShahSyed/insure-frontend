@@ -198,3 +198,4 @@ export class AdminLayoutComponent {
 
   logout() { this.authService.logout(); }
 }
+
