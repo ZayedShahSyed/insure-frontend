@@ -235,7 +235,6 @@ interface EnrichedCustomer extends CustomerUserResponse {
     </div>
   `,
   styles: [`
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700;800&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     .page-wrapper { display: flex; flex-direction: column; gap: 1.8rem; font-family: 'Inter', sans-serif; }
