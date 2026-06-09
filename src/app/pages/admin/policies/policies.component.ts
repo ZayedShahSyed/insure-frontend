@@ -58,12 +58,14 @@ import { ToastService } from "../../../shared/services/toast.service";
             </div>
             <div class="form-group">
               <label>Min Age</label>
-              <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" min="1" />
+              <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" min="1" max="120" (blur)="validateAge()" />
+              <span class="error-message" *ngIf="ageError">{{ ageError }}</span>
             </div>
 
             <div class="form-group">
               <label>Max Age</label>
-              <input [(ngModel)]="form.maxAge" name="maxAge" type="number" placeholder="65" [min]="form.minAge || 1" />
+              <input [(ngModel)]="form.maxAge" name="maxAge" type="number" placeholder="65" [min]="form.minAge || 1" max="120" (blur)="validateAge()" />
+              <span class="error-message" *ngIf="ageError">{{ ageError }}</span>
             </div>
             <div class="form-group full-span">
               <label>Description</label>
@@ -150,6 +152,7 @@ import { ToastService } from "../../../shared/services/toast.service";
     .form-group label { font-family: "DM Sans", sans-serif; font-size: 0.8rem; font-weight: 600; color: #374151; }
     .form-group input, .form-group select, .form-group textarea { padding: 0.65rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; font-family: "Inter", sans-serif; color: #0f172a; transition: border-color 0.2s; background: white; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0284c7; }
+    .error-message { font-family: "DM Sans", sans-serif; font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; display: block; }
     .form-actions { display: flex; gap: 0.75rem; }
     .btn-primary { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.7rem 1.5rem; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: "DM Sans", sans-serif; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px rgba(2,132,199,0.3); }
     .btn-primary:hover { transform: translateY(-1px); }
@@ -193,6 +196,7 @@ export class PoliciesComponent implements OnInit {
   form: PolicyRequest = { name: "", policyType: "INDIVIDUAL" as any, description: "", categoryId: 0, benefits: {}, exclusions: {}, documents: {}, minAge: 18, maxAge: 65, waitingPeriodDays: 30 };
   editing = false;
   editId = 0;
+  ageError = "";
 
   constructor(private policyService: PolicyService, private categoryService: PolicyCategoryService, private toast: ToastService) {}
 
@@ -225,14 +229,35 @@ export class PoliciesComponent implements OnInit {
     }
   }
 
+  validateAge(): void {
+    this.ageError = "";
+    const min = Number(this.form.minAge);
+    const max = Number(this.form.maxAge);
+
+    if (!Number.isFinite(min) || min < 1) {
+      this.ageError = "Min age must be at least 1";
+      return;
+    }
+
+    if (!Number.isFinite(max) || max < 1) {
+      this.ageError = "Max age must be at least 1";
+      return;
+    }
+
+    if (max <= min) {
+      this.ageError = "Max age must be greater than min age";
+      return;
+    }
+  }
+
   edit(p: PolicyResponse) {
     this.editing = true;
     this.editId = p.id;
     this.form = { name: p.name, policyType: p.policyType as any, description: p.description, categoryId: p.categoryId, benefits: p.benefits || {}, exclusions: p.exclusions || {}, documents: p.documents || {}, minAge: p.minAge, maxAge: p.maxAge, waitingPeriodDays: p.waitingPeriodDays };
   }
 
-  cancelEdit() { this.editing = false; this.editId = 0; this.resetForm(); }
-  resetForm() { this.form = { name: "", policyType: "INDIVIDUAL" as any, description: "", categoryId: 0, benefits: {}, exclusions: {}, documents: {}, minAge: 18, maxAge: 65, waitingPeriodDays: 30 }; }
+  cancelEdit() { this.editing = false; this.editId = 0; this.ageError = ""; this.resetForm(); }
+  resetForm() { this.form = { name: "", policyType: "INDIVIDUAL" as any, description: "", categoryId: 0, benefits: {}, exclusions: {}, documents: {}, minAge: 18, maxAge: 65, waitingPeriodDays: 30 }; this.ageError = ""; }
   remove(id: number) { this.policyService.delete(id).subscribe({ next: () => { this.toast.success("Policy deactivated"); this.load(); }, error: () => this.toast.error("Failed") }); }
   reactivate(id: number) { this.policyService.reactivate(id).subscribe({ next: () => { this.toast.success("Policy reactivated"); this.load(); }, error: () => this.toast.error("Failed") }); }
 }
