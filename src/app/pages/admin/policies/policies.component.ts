@@ -60,10 +60,7 @@ import { ToastService } from "../../../shared/services/toast.service";
               <label>Min Age</label>
               <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" min="1" />
             </div>
-            <div class="form-group">
-              <label>Min Age</label>
-              <input [(ngModel)]="form.minAge" name="minAge" type="number" placeholder="18" min="1" />
-            </div>
+
             <div class="form-group">
               <label>Max Age</label>
               <input [(ngModel)]="form.maxAge" name="maxAge" type="number" placeholder="65" [min]="form.minAge || 1" />
