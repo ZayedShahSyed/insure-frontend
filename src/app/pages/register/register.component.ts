@@ -11,7 +11,6 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <div class="auth-container">
 
-      <!-- Top Nav Bar -->
       <div class="top-nav">
         <a routerLink="/" class="brand">
           <img src="logo.jpg" alt="InsureHealth" class="nav-logo">
@@ -120,20 +119,38 @@ export class RegisterComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
+    // 1. Check for empty required fields
     if (!this.fullName || !this.email || !this.password) {
       this.error = 'Full name, email, and password are required.';
       return;
     }
-    if (!this.email.includes('@')) {
-      this.error = 'Please enter a valid email address.';
+
+    // 2. Robust Email Validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.email)) {
+      this.error = 'Please enter a valid email address (e.g., you@example.com).';
       return;
     }
+
+    // 3. Indian Phone Number Validation
+    if (this.phone) {
+      const phoneRegex = /^(?:\+?91[\-\s]?)?[6789]\d{9}$/;
+      if (!phoneRegex.test(this.phone)) {
+        this.error = 'Please enter a valid Indian mobile number (e.g., 9876543210 or +91 9876543210).';
+        return;
+      }
+    }
+
+    // 4. Password Length Validation
     if (this.password.length < 6) {
       this.error = 'Password must be at least 6 characters.';
       return;
     }
+
+    // 5. Proceed with Registration
     this.loading = true;
     this.error = '';
+    
     this.authService.register({
       fullName: this.fullName,
       email: this.email,

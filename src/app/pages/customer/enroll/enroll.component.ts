@@ -111,22 +111,106 @@ export class EnrollComponent implements OnInit {
     this.members.push({ fullName: '', personType: 'MEMBER', relationship: 'OTHER', dateOfBirth: '', gender: 'MALE', phone: '' });
   }
 
-  removeMember(i: number) { this.members.splice(i, 1); }
+  removeMember(i: number) { 
+    this.members.splice(i, 1); 
+  }
 
   onSubmit() {
-    // Validation
-    for (const m of this.members) {
+    this.error = '';
+
+    if (!this.plan) return;
+
+    // 1. Overall Plan Validations
+    if (this.isIndividual && this.members.length > 1) {
+      this.error = 'Individual plans can only have 1 member.';
+      this.toast.error(this.error);
+      return;
+    }
+
+    if (this.members.length > (this.plan.maxMembers || 4)) {
+      this.error = `This plan allows a maximum of ${this.plan.maxMembers} members.`;
+      this.toast.error(this.error);
+      return;
+    }
+
+    // 2. Member Specific Validations
+    const phoneRegex = /^(?:\+?91[\-\s]?)?[6789]\d{9}$/;
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let selfCount = 0;
+
+    for (let i = 0; i < this.members.length; i++) {
+      const m = this.members[i];
+      const memberLabel = this.isIndividual ? 'Your Details' : `Member ${i + 1}`;
+
+      // Check required fields
       if (!m.fullName || !m.dateOfBirth || !m.phone) {
-        this.error = 'Please fill in all member details (name, date of birth, phone).';
+        this.error = `${memberLabel}: Please fill in all required details (name, date of birth, phone).`;
         this.toast.error(this.error);
         return;
       }
+
+      // Check Full Name
+      if (!nameRegex.test(m.fullName)) {
+        this.error = `${memberLabel}: Full name must be between 2 to 50 characters and contain only letters.`;
+        this.toast.error(this.error);
+        return;
+      }
+
+      // Check Date of Birth
+      const dob = new Date(m.dateOfBirth);
+      if (dob > today) {
+        this.error = `${memberLabel}: Date of birth cannot be in the future.`;
+        this.toast.error(this.error);
+        return;
+      }
+
+      // Check Phone format
+      if (!phoneRegex.test(m.phone)) {
+        this.error = `${memberLabel}: Please enter a valid Indian mobile number.`;
+        this.toast.error(this.error);
+        return;
+      }
+
+      // Track relationship
+      if (m.relationship === 'SELF') {
+        selfCount++;
+      }
     }
+
+    // 3. Ensure exactly one primary policyholder exists
+    if (selfCount === 0) {
+      this.error = 'At least one member must be the primary policyholder (Relationship: Self).';
+      this.toast.error(this.error);
+      return;
+    }
+
+    if (selfCount > 1) {
+      this.error = 'Only one member can be the primary policyholder (Relationship: Self). Please change relationships for others.';
+      this.toast.error(this.error);
+      return;
+    }
+
+    // 4. Submit Payload
     this.loading = true;
-    this.error = '';
-    this.enrollmentService.enroll({ policyPlanId: this.planId, tenureYears: this.tenureYears, members: this.members }).subscribe({
-      next: () => { this.loading = false; this.toast.success('Enrollment submitted successfully!'); this.router.navigate(['/customer/enrollments']); },
-      error: (err) => { this.loading = false; this.error = err.error?.message || 'Enrollment failed'; this.toast.error(this.error); }
+    
+    this.enrollmentService.enroll({ 
+      policyPlanId: this.planId, 
+      tenureYears: this.tenureYears, 
+      members: this.members 
+    }).subscribe({
+      next: () => { 
+        this.loading = false; 
+        this.toast.success('Enrollment submitted successfully!'); 
+        this.router.navigate(['/customer/enrollments']); 
+      },
+      error: (err) => { 
+        this.loading = false; 
+        this.error = err.error?.message || 'Enrollment failed'; 
+        this.toast.error(this.error); 
+      }
     });
   }
 }
