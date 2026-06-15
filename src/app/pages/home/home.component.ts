@@ -264,7 +264,6 @@ import { Observable } from 'rxjs';
     </footer>
   `,
   styles: [`
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800&family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 

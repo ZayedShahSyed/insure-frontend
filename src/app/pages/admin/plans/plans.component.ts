@@ -44,11 +44,13 @@ import { ToastService } from "../../../shared/services/toast.service";
             </div>
             <div class="form-group">
               <label>Coverage Amount (&#8377;)</label>
-              <input [(ngModel)]="form.coverageAmount" name="coverageAmount" type="number" placeholder="500000" />
+              <input [(ngModel)]="form.coverageAmount" name="coverageAmount" type="number" placeholder="500000" min="1" required (blur)="validateAmount('coverage')" />
+              <span class="error-message" *ngIf="amountErrors.coverage">{{ amountErrors.coverage }}</span>
             </div>
             <div class="form-group">
               <label>Premium Amount (&#8377;)</label>
-              <input [(ngModel)]="form.premiumAmount" name="premiumAmount" type="number" placeholder="12000" />
+              <input [(ngModel)]="form.premiumAmount" name="premiumAmount" type="number" placeholder="12000" min="1" required (blur)="validateAmount('premium')" />
+              <span class="error-message" *ngIf="amountErrors.premium">{{ amountErrors.premium }}</span>
             </div>
             <div class="form-group">
               <label>Premium Basis</label>
@@ -59,7 +61,8 @@ import { ToastService } from "../../../shared/services/toast.service";
             </div>
             <div class="form-group">
               <label>Max Members</label>
-              <input [(ngModel)]="form.maxMembers" name="maxMembers" type="number" placeholder="4" />
+              <input [(ngModel)]="form.maxMembers" name="maxMembers" type="number" placeholder="4" min="1" step="1" required (blur)="validateMaxMembers()" />
+              <span class="error-message" *ngIf="maxMembersError">{{ maxMembersError }}</span>
             </div>
             <div class="form-group renewal-group">
               <label>Options</label>
@@ -127,7 +130,6 @@ import { ToastService } from "../../../shared/services/toast.service";
     </div>
   `,
   styles: [`
-    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap");
     * { box-sizing: border-box; margin: 0; padding: 0; }
     .page-wrapper { display: flex; flex-direction: column; gap: 1.5rem; font-family: "Inter", sans-serif; }
     .page-header { display: flex; align-items: center; }
@@ -149,6 +151,7 @@ import { ToastService } from "../../../shared/services/toast.service";
     .checkbox-label input { width: 16px; height: 16px; cursor: pointer; accent-color: #4f46e5; }
     .form-group input, .form-group select { padding: 0.65rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; font-family: "Inter", sans-serif; color: #0f172a; transition: border-color 0.2s; background: white; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: #4f46e5; }
+    .error-message { font-family: "DM Sans", sans-serif; font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; display: block; }
     .form-actions { display: flex; gap: 0.75rem; }
     .btn-primary { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.7rem 1.5rem; background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: "DM Sans", sans-serif; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
     .btn-primary:hover { transform: translateY(-1px); }
@@ -188,6 +191,8 @@ export class PlansComponent implements OnInit {
   form: PolicyPlanRequest = { planName: "", coverageAmount: 0, premiumAmount: 0, premiumBasis: "FLAT", tenureOptions: [1, 2, 3], maxMembers: 4, renewalAllowed: true };
   editing = false;
   editId = 0;
+  maxMembersError = "";
+  amountErrors: { coverage: string; premium: string } = { coverage: "", premium: "" };
 
   constructor(private route: ActivatedRoute, private service: PolicyPlanService, private toast: ToastService) {}
 
@@ -199,11 +204,68 @@ export class PlansComponent implements OnInit {
   load() { this.service.getByPolicy(this.policyId).subscribe(res => this.plans = res); }
 
   onSubmit() {
+    if (!this.validateMaxMembers()) return;
+    if (!this.validateAmounts()) return;
     if (this.editing) {
       this.service.update(this.editId, this.form).subscribe({ next: () => { this.toast.success("Plan updated"); this.cancelEdit(); this.load(); }, error: () => this.toast.error("Failed to update plan") });
     } else {
       this.service.create(this.policyId, this.form).subscribe({ next: () => { this.toast.success("Plan created"); this.resetForm(); this.load(); }, error: () => this.toast.error("Failed to create plan") });
     }
+  }
+
+  validateAmount(type: 'coverage' | 'premium'): void {
+    if (type === 'coverage') {
+      this.amountErrors.coverage = "";
+      if (this.form.coverageAmount === null || this.form.coverageAmount === undefined || this.form.coverageAmount === 0) {
+        this.amountErrors.coverage = "Coverage Amount is required";
+        return;
+      }
+      if (this.form.coverageAmount < 1) {
+        this.amountErrors.coverage = "Coverage Amount cannot be negative";
+        this.form.coverageAmount = 1;
+        return;
+      }
+    } else if (type === 'premium') {
+      this.amountErrors.premium = "";
+      if (this.form.premiumAmount === null || this.form.premiumAmount === undefined || this.form.premiumAmount === 0) {
+        this.amountErrors.premium = "Premium Amount is required";
+        return;
+      }
+      if (this.form.premiumAmount < 1) {
+        this.amountErrors.premium = "Premium Amount cannot be negative";
+        this.form.premiumAmount = 1;
+        return;
+      }
+    }
+  }
+
+  validateAmounts(): boolean {
+    this.validateAmount('coverage');
+    this.validateAmount('premium');
+    return !this.amountErrors.coverage && !this.amountErrors.premium;
+  }
+
+  validateMaxMembers(): boolean {
+    this.maxMembersError = "";
+
+    if (!this.form.maxMembers) {
+      this.maxMembersError = "Max Members is required";
+      return false;
+    }
+
+    if (this.form.maxMembers < 1) {
+      this.maxMembersError = "Max Members cannot be negative or zero";
+      this.form.maxMembers = 1;
+      return false;
+    }
+
+    if (!Number.isInteger(this.form.maxMembers)) {
+      this.maxMembersError = "Max Members must be a whole number";
+      this.form.maxMembers = Math.ceil(this.form.maxMembers);
+      return false;
+    }
+
+    return true;
   }
 
   edit(plan: PolicyPlanResponse) {
@@ -212,7 +274,7 @@ export class PlansComponent implements OnInit {
     this.form = { planName: plan.planName, coverageAmount: plan.coverageAmount, premiumAmount: plan.premiumAmount, premiumBasis: plan.premiumBasis, tenureOptions: plan.tenureOptions || [1, 2, 3], maxMembers: plan.maxMembers, renewalAllowed: plan.renewalAllowed };
   }
 
-  cancelEdit() { this.editing = false; this.editId = 0; this.resetForm(); }
-  resetForm() { this.form = { planName: "", coverageAmount: 0, premiumAmount: 0, premiumBasis: "FLAT", tenureOptions: [1, 2, 3], maxMembers: 4, renewalAllowed: true }; }
+  cancelEdit() { this.editing = false; this.editId = 0; this.maxMembersError = ""; this.amountErrors = { coverage: "", premium: "" }; this.resetForm(); }
+  resetForm() { this.form = { planName: "", coverageAmount: 0, premiumAmount: 0, premiumBasis: "FLAT", tenureOptions: [1, 2, 3], maxMembers: 4, renewalAllowed: true }; this.maxMembersError = ""; this.amountErrors = { coverage: "", premium: "" }; }
   remove(id: number) { this.service.delete(id).subscribe({ next: () => { this.toast.success("Plan deleted"); this.load(); }, error: () => this.toast.error("Failed to delete") }); }
 }

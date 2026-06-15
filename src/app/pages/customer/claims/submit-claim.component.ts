@@ -40,7 +40,8 @@ import { ToastService } from '../../../shared/services/toast.service';
       </div>
       <div class="form-group">
         <label>Claimed Amount (₹)</label>
-        <input type="number" [(ngModel)]="form.claimedAmount" name="claimedAmount" required />
+        <input type="number" [(ngModel)]="form.claimedAmount" name="claimedAmount" min="1" required (blur)="validateClaimedAmount()" />
+        <span class="error-message" *ngIf="claimedAmountError">{{ claimedAmountError }}</span>
       </div>
       <div class="actions">
         <button type="submit" [disabled]="loading">{{ loading ? 'Submitting...' : 'Submit Claim' }}</button>
@@ -57,6 +58,7 @@ import { ToastService } from '../../../shared/services/toast.service';
     .actions button { padding: 0.75rem 1.5rem; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
     .actions button:disabled { opacity: 0.6; }
     .error { color: #dc2626; margin-top: 0.5rem; }
+    .error-message { display: block; font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; }
   `]
 })
 export class SubmitClaimComponent implements OnInit {
@@ -64,6 +66,7 @@ export class SubmitClaimComponent implements OnInit {
   form: ClaimRequest = { enrollmentId: 0, claimType: '', incidentDate: '', hospitalName: '', diagnosis: '', description: '', claimedAmount: 0, documents: {} };
   loading = false;
   error = '';
+  claimedAmountError = '';
 
   constructor(private claimService: ClaimService, private enrollmentService: EnrollmentService, private router: Router, private toast: ToastService) {}
 
@@ -72,6 +75,11 @@ export class SubmitClaimComponent implements OnInit {
   }
 
   onSubmit() {
+    this.validateClaimedAmount();
+    if (this.claimedAmountError) {
+      this.toast.error(this.claimedAmountError);
+      return;
+    }
     this.loading = true;
     this.error = '';
     this.claimService.submit(this.form).subscribe({
@@ -79,5 +87,12 @@ export class SubmitClaimComponent implements OnInit {
       error: (err) => { this.loading = false; this.error = err.error?.message || 'Submission failed'; this.toast.error(this.error); }
     });
   }
-}
 
+  validateClaimedAmount() {
+    if (this.form.claimedAmount <= 0) {
+      this.claimedAmountError = 'Claimed amount must be a positive number';
+    } else {
+      this.claimedAmountError = '';
+    }
+  }
+}
