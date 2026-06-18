@@ -69,7 +69,8 @@ import { ToastService } from "../../../shared/services/toast.service";
             </div>
             <div class="form-group full-span">
               <label>Description</label>
-              <textarea [(ngModel)]="form.description" name="description" placeholder="Policy description..." rows="2"></textarea>
+              <textarea [(ngModel)]="form.description" name="description" placeholder="Policy description..." rows="2" (blur)="validateDescription()" [class.input-error]="descriptionError"></textarea>
+              <span class="error-message" *ngIf="descriptionError">{{ descriptionError }}</span>
             </div>
           </div>
           <div class="form-actions">
@@ -197,6 +198,7 @@ export class PoliciesComponent implements OnInit {
   editing = false;
   editId = 0;
   ageError = "";
+  descriptionError = "";
 
   constructor(private policyService: PolicyService, private categoryService: PolicyCategoryService, private toast: ToastService) {}
 
@@ -219,6 +221,11 @@ export class PoliciesComponent implements OnInit {
 
     if (!Number.isFinite(max) || max <= min) {
       this.toast.error("Max age must be greater than min age");
+      return;
+    }
+
+    // Validate description length
+    if (!this.validateDescription()) {
       return;
     }
 
@@ -250,14 +257,23 @@ export class PoliciesComponent implements OnInit {
     }
   }
 
+  validateDescription(): boolean {
+    this.descriptionError = "";
+    if (this.form.description && this.form.description.length > 500) {
+      this.descriptionError = "Description cannot exceed 500 characters.";
+      return false;
+    }
+    return true;
+  }
+
   edit(p: PolicyResponse) {
     this.editing = true;
     this.editId = p.id;
     this.form = { name: p.name, policyType: p.policyType as any, description: p.description, categoryId: p.categoryId, benefits: p.benefits || {}, exclusions: p.exclusions || {}, documents: p.documents || {}, minAge: p.minAge, maxAge: p.maxAge, waitingPeriodDays: p.waitingPeriodDays };
   }
 
-  cancelEdit() { this.editing = false; this.editId = 0; this.ageError = ""; this.resetForm(); }
-  resetForm() { this.form = { name: "", policyType: "INDIVIDUAL" as any, description: "", categoryId: 0, benefits: {}, exclusions: {}, documents: {}, minAge: 18, maxAge: 65, waitingPeriodDays: 30 }; this.ageError = ""; }
+  cancelEdit() { this.editing = false; this.editId = 0; this.ageError = ""; this.descriptionError = ""; this.resetForm(); }
+  resetForm() { this.form = { name: "", policyType: "INDIVIDUAL" as any, description: "", categoryId: 0, benefits: {}, exclusions: {}, documents: {}, minAge: 18, maxAge: 65, waitingPeriodDays: 30 }; this.ageError = ""; this.descriptionError = ""; }
   remove(id: number) { this.policyService.delete(id).subscribe({ next: () => { this.toast.success("Policy deactivated"); this.load(); }, error: () => this.toast.error("Failed") }); }
   reactivate(id: number) { this.policyService.reactivate(id).subscribe({ next: () => { this.toast.success("Policy reactivated"); this.load(); }, error: () => this.toast.error("Failed") }); }
 }

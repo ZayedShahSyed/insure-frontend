@@ -40,7 +40,8 @@ import { ToastService } from "../../../shared/services/toast.service";
           <div class="form-grid">
             <div class="form-group">
               <label>Plan Name</label>
-              <input [(ngModel)]="form.planName" name="planName" placeholder="e.g. Silver Plan" required />
+              <input [(ngModel)]="form.planName" name="planName" placeholder="e.g. Silver Plan" required (blur)="validatePlanName()" [class.input-error]="nameError" />
+              <span class="error-message" *ngIf="nameError">{{ nameError }}</span>
             </div>
             <div class="form-group">
               <label>Coverage Amount (&#8377;)</label>
@@ -152,6 +153,7 @@ import { ToastService } from "../../../shared/services/toast.service";
     .form-group input, .form-group select { padding: 0.65rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.88rem; font-family: "Inter", sans-serif; color: #0f172a; transition: border-color 0.2s; background: white; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: #4f46e5; }
     .error-message { font-family: "DM Sans", sans-serif; font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem; display: block; }
+    .form-group input.input-error, .form-group select.input-error { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,37,37,0.06); }
     .form-actions { display: flex; gap: 0.75rem; }
     .btn-primary { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.7rem 1.5rem; background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: "DM Sans", sans-serif; font-size: 0.9rem; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
     .btn-primary:hover { transform: translateY(-1px); }
@@ -193,6 +195,7 @@ export class PlansComponent implements OnInit {
   editId = 0;
   maxMembersError = "";
   amountErrors: { coverage: string; premium: string } = { coverage: "", premium: "" };
+  nameError = "";
 
   constructor(private route: ActivatedRoute, private service: PolicyPlanService, private toast: ToastService) {}
 
@@ -204,6 +207,8 @@ export class PlansComponent implements OnInit {
   load() { this.service.getByPolicy(this.policyId).subscribe(res => this.plans = res); }
 
   onSubmit() {
+    // validate plan name first
+    if (!this.validatePlanName()) return;
     if (!this.validateMaxMembers()) return;
     if (!this.validateAmounts()) return;
     if (this.editing) {
@@ -221,8 +226,14 @@ export class PlansComponent implements OnInit {
         return;
       }
       if (this.form.coverageAmount < 1) {
-        this.amountErrors.coverage = "Coverage Amount cannot be negative";
+        this.amountErrors.coverage = "Coverage Amount cannot be less than 1";
         this.form.coverageAmount = 1;
+        return;
+      }
+      // ensure whole number
+      if (!Number.isInteger(this.form.coverageAmount)) {
+        this.amountErrors.coverage = "Coverage Amount must be a whole number";
+        this.form.coverageAmount = Math.ceil(this.form.coverageAmount);
         return;
       }
     } else if (type === 'premium') {
@@ -232,11 +243,34 @@ export class PlansComponent implements OnInit {
         return;
       }
       if (this.form.premiumAmount < 1) {
-        this.amountErrors.premium = "Premium Amount cannot be negative";
+        this.amountErrors.premium = "Premium Amount cannot be less than 1";
         this.form.premiumAmount = 1;
         return;
       }
+      if (!Number.isInteger(this.form.premiumAmount)) {
+        this.amountErrors.premium = "Premium Amount must be a whole number";
+        this.form.premiumAmount = Math.ceil(this.form.premiumAmount);
+        return;
+      }
+      // Ensure premium is not greater than coverage
+      if (this.form.coverageAmount && this.form.premiumAmount > this.form.coverageAmount) {
+        this.amountErrors.premium = "Premium Amount cannot be greater than Coverage Amount";
+        return;
+      }
     }
+  }
+
+  validatePlanName(): boolean {
+    this.nameError = "";
+    if (!this.form.planName || !this.form.planName.toString().trim()) {
+      this.nameError = "Plan Name is required";
+      return false;
+    }
+    if (this.form.planName.toString().trim().length < 2) {
+      this.nameError = "Plan Name must be at least 2 characters";
+      return false;
+    }
+    return true;
   }
 
   validateAmounts(): boolean {
@@ -275,6 +309,6 @@ export class PlansComponent implements OnInit {
   }
 
   cancelEdit() { this.editing = false; this.editId = 0; this.maxMembersError = ""; this.amountErrors = { coverage: "", premium: "" }; this.resetForm(); }
-  resetForm() { this.form = { planName: "", coverageAmount: 0, premiumAmount: 0, premiumBasis: "FLAT", tenureOptions: [1, 2, 3], maxMembers: 4, renewalAllowed: true }; this.maxMembersError = ""; this.amountErrors = { coverage: "", premium: "" }; }
+  resetForm() { this.form = { planName: "", coverageAmount: 0, premiumAmount: 0, premiumBasis: "FLAT", tenureOptions: [1, 2, 3], maxMembers: 4, renewalAllowed: true }; this.maxMembersError = ""; this.amountErrors = { coverage: "", premium: "" }; this.nameError = ""; }
   remove(id: number) { this.service.delete(id).subscribe({ next: () => { this.toast.success("Plan deleted"); this.load(); }, error: () => this.toast.error("Failed to delete") }); }
 }
